@@ -46,5 +46,15 @@ async function updateTask(taskId, updates) {
     if (!data) throw new ApiError(404, 'Task not found');
     return data;
 }
+async function updateStatus(taskId, status, requester) {
+    if (requester.role === 'Collaborator') {
+        const { data: assignment } = await supabase
+            .from('TaskAssignments').select('id').eq('task_id', taskId).eq('user_id', requester.id).maybeSingle();
+        if (!assignment) throw new ApiError(403, 'You are not assigned to this task');
+    }
+    const { data, error } = await supabase.from('Tasks').update({ status }).eq('id', taskId).select().single();
+    if (error) throw new ApiError(400, error.message);
+    return data;
+}
 
-module.exports = { createTask, listTasks, updateTask };
+module.exports = { createTask, listTasks, updateTask, updateStatus };
