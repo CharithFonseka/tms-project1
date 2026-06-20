@@ -1,5 +1,5 @@
 const supabase = require('../../config/db');
-const { comparePassword } = require('../../utils/password.util');
+const { comparePassword, hashPassword } = require('../../utils/password.util');
 const ApiError = require('../../utils/ApiError');
 
 async function login(email, password) {
@@ -11,4 +11,14 @@ async function login(email, password) {
 
     return user;
 }
-module.exports = { login };
+
+async function resetPassword(userId, oldPassword, newPassword) {
+    const { data: user } = await supabase.from('Users').select('*').eq('id', userId).single();
+    if (!(await comparePassword(oldPassword, user.password))) throw new ApiError(401, 'Current password incorrect');
+    if (newPassword.length < 8) throw new ApiError(400, 'Password must be at least 8 characters');
+
+    const hashed = await hashPassword(newPassword);
+    await supabase.from('Users').update({ password: hashed, must_reset_password: false }).eq('id', userId);
+}
+
+module.exports = { login, resetPassword };
