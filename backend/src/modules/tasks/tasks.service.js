@@ -63,5 +63,14 @@ async function deleteTask(taskId) {
     const { error } = await supabase.from('Tasks').delete().eq('id', taskId);
     if (error) throw new ApiError(400, error.message);
 }
+async function addAssignee(taskId, userId) {
+    const { error } = await supabase.from('TaskAssignments').insert({ task_id: taskId, user_id: userId });
+    if (error) throw new ApiError(400, 'User is already assigned or does not exist');
+}
 
-module.exports = { createTask, listTasks, updateTask, updateStatus, deleteTask };
+async function removeAssignee(taskId, userId) {
+    const { error } = await supabase.from('TaskAssignments').delete().eq('task_id', taskId).eq('user_id', userId);
+    if (error) throw new ApiError(400, error.message);
+}
+
+module.exports = { createTask, listTasks, updateTask, updateStatus, deleteTask, addAssignee, removeAssignee };
