@@ -34,12 +34,12 @@ export default function LoginPage() {
                 {serverError && (
                     <p className="mb-4 rounded bg-red-50 p-2 text-sm text-red-600">{serverError}</p>
                 )}
-                <label className="mb-1 block text-sm font-medium text-slate-700">Email</label>
-                <input {...register('email')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
+                <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">Email</label>
+                <input id="email" {...register('email')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
                 {errors.email && <p className="mb-3 text-sm text-red-600">{errors.email.message}</p>}
 
-                <label className="mb-1 block text-sm font-medium text-slate-700">Password</label>
-                <input type="password" {...register('password')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
+                <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-700">Password</label>
+                <input id="password" type="password" {...register('password')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
                 {errors.password && <p className="mb-3 text-sm text-red-600">{errors.password.message}</p>}
 
                 <button

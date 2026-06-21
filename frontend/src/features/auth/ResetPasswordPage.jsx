@@ -33,12 +33,12 @@ export default function ResetPasswordPage() {
                 <p className="mb-6 text-sm text-slate-500">You must reset your password before continuing.</p>
                 {serverError && <p className="mb-4 rounded bg-red-50 p-2 text-sm text-red-600">{serverError}</p>}
 
-                <label className="mb-1 block text-sm font-medium text-slate-700">Current (temporary) password</label>
-                <input type="password" {...register('oldPassword')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
+                <label htmlFor="oldPassword" className="mb-1 block text-sm font-medium text-slate-700">Current (temporary) password</label>
+                <input id="oldPassword" type="password" {...register('oldPassword')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
                 {errors.oldPassword && <p className="mb-3 text-sm text-red-600">{errors.oldPassword.message}</p>}
 
-                <label className="mb-1 block text-sm font-medium text-slate-700">New password</label>
-                <input type="password" {...register('newPassword')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
+                <label htmlFor="newPassword" className="mb-1 block text-sm font-medium text-slate-700">New password</label>
+                <input id="newPassword" type="password" {...register('newPassword')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
                 {errors.newPassword && <p className="mb-3 text-sm text-red-600">{errors.newPassword.message}</p>}
 
                 <button type="submit" disabled={isSubmitting} className="mt-4 w-full rounded bg-indigo-600 py-2 font-medium text-white hover:bg-indigo-700 disabled:opacity-50">
