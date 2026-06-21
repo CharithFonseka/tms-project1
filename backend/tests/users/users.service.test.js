@@ -1,6 +1,7 @@
 jest.mock('../../src/config/db');
 const supabase = require('../../src/config/db');
 const { createUser, listUsers } = require('../../src/modules/users/users.service');
+const { updateUser } = require('../../src/modules/users/users.service');
 
 test('createUser succeeds and excludes password from response', async () => {
   let insertedValues = null;
@@ -50,3 +51,17 @@ test('listUsers applies role filter correctly', async () => {
   expect(eqCalledWith).toEqual({ field: 'role', value: 'Admin' });
 });
 
+test('updateUser succeeds and returns updated data', async () => {
+  supabase.from = () => ({
+    update: () => ({ eq: () => ({ select: () => ({ maybeSingle: async () => ({ data: { id: 1, name: 'Updated Name' }, error: null }) }) }) }),
+  });
+  const result = await updateUser(1, { name: 'Updated Name' });
+  expect(result.name).toBe('Updated Name');
+});
+
+test('updateUser throws 404 when target id does not exist', async () => {
+  supabase.from = () => ({
+    update: () => ({ eq: () => ({ select: () => ({ maybeSingle: async () => ({ data: null, error: null }) }) }) }),
+  });
+  await expect(updateUser('nonexistent-id', { name: 'X' })).rejects.toMatchObject({ status: 404 });
+});

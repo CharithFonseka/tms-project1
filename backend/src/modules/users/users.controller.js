@@ -20,4 +20,11 @@ async function listUsersHandler(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { createUserHandler, listUsersHandler };
+async function updateUserHandler(req, res, next) {
+  try {
+    const user = await usersService.updateUser(req.params.id, req.body);
+    res.json(user);
+  } catch (err) { next(err); }
+}
+
+module.exports = { createUserHandler, listUsersHandler, updateUserHandler };

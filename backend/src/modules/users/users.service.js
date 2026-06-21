@@ -31,4 +31,11 @@ async function listUsers({ search, role, page = 1, limit = 20 }) {
   return { data, total: count };
 }
 
-module.exports = { createUser, listUsers };
+async function updateUser(targetId, updates) {
+  const { data, error } = await supabase.from('Users').update(updates).eq('id', targetId).select().maybeSingle();
+  if (error) throw new ApiError(400, error.message);
+  if (!data) throw new ApiError(404, 'User not found');
+  return data;
+}
+
+module.exports = { createUser, listUsers, updateUser };
