@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-
 const app = express();
 
 app.use(cors({ origin: true, credentials: true }));
@@ -10,8 +9,7 @@ app.use(cookieParser());
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-// Routes get mounted here as each module is built
-// app.use('/api/auth', require('./modules/auth/auth.routes'));
-// app.use('/api/users', require('./modules/users/users.routes'));
+// Routes
+app.use('/api/notifications', require('./modules/notifications/notifications.routes'));
 
 module.exports = app;
