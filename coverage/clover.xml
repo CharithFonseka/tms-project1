@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1782021265404" clover="3.2.0">
+  <project timestamp="1782021265404" name="All files">
+    <metrics statements="13" coveredstatements="13" conditionals="4" coveredconditionals="4" methods="4" coveredmethods="4" elements="21" coveredelements="21" complexity="0" loc="13" ncloc="13" packages="3" files="3" classes="3"/>
+    <package name="middlewares">
+      <metrics statements="6" coveredstatements="6" conditionals="4" coveredconditionals="4" methods="2" coveredmethods="2"/>
+      <file name="rbac.middleware.js" path="C:\Users\HP\Desktop\tms-project1\backend\src\middlewares\rbac.middleware.js">
+        <metrics statements="6" coveredstatements="6" conditionals="4" coveredconditionals="4" methods="2" coveredmethods="2"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="3" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="4" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="modules.users">
+      <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="users.validation.js" path="C:\Users\HP\Desktop\tms-project1\backend\src\modules\users\users.validation.js">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="utils">
+      <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <file name="password.util.js" path="C:\Users\HP\Desktop\tms-project1\backend\src\utils\password.util.js">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

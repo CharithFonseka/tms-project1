@@ -6,7 +6,7 @@ async function loginHandler(req, res, next) {
     const { email, password } = req.body;
     const user = await authService.login(email, password);
     const token = signToken(user);
-    res.cookie('token', token, {
+    res.cookie('tms_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',

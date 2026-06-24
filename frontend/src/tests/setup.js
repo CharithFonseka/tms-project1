@@ -3,5 +3,11 @@ import '@testing-library/jest-dom';
 import { server } from '../mocks/server';
 
 beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
+beforeEach(() => {
+  sessionStorage.setItem('user', JSON.stringify({ id: 'mock-admin', role: 'Admin', name: 'Test Admin' }));
+});
+afterEach(() => {
+  server.resetHandlers();
+  sessionStorage.clear();
+});
 afterAll(() => server.close());

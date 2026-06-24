@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const supabase = require('../../config/db');
 const { hashPassword } = require('../../utils/password.util');
 const ApiError = require('../../utils/ApiError');
+const { sendWelcomeEmail } = require('../../utils/mailer');
 
 async function createUser({ name, email, role }) {
   const { data: existing } = await supabase.from('Users').select('id').eq('email', email).maybeSingle();
@@ -17,8 +18,7 @@ async function createUser({ name, email, role }) {
     .single();
   if (error) throw new ApiError(400, error.message);
 
-  // TODO: wire a real email service later. Stubbed for now.
-  console.log(`[email stub] Send to ${email}: username=${email}, temp password=${tempPassword}`);
+  await sendWelcomeEmail(email, tempPassword);
 
   return user;
 }

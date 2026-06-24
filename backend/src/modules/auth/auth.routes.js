@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const { loginHandler, resetPasswordHandler } = require('./auth.controller');
 const authenticate = require('../../middlewares/jwt.middleware');
+const validate = require('../../middlewares/validate.middleware');
+const { loginSchema, resetPasswordSchema } = require('./auth.validation');
 
 /**
  * @swagger
@@ -24,7 +26,7 @@ const authenticate = require('../../middlewares/jwt.middleware');
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', loginHandler);
+router.post('/login', validate(loginSchema), loginHandler);
 
 /**
  * @swagger
@@ -52,6 +54,6 @@ router.post('/login', loginHandler);
  *       400:
  *         description: New password too short
  */
-router.put('/reset-password', authenticate, resetPasswordHandler);
+router.put('/reset-password', authenticate, validate(resetPasswordSchema), resetPasswordHandler);
 
 module.exports = router;

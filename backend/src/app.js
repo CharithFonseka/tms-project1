@@ -33,6 +33,9 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/auth', require('./modules/auth/auth.routes'));
 app.use('/api/users', require('./modules/users/users.routes'));
 app.use('/api/notifications', require('./modules/notifications/notifications.routes'));
+app.use('/api/tasks', require('./modules/tasks/tasks.routes'));
+app.use('/api/tasks/:taskId/comments', require('./modules/comments/comments.routes'));
+app.use('/api/tasks/:taskId/attachments', require('./modules/attachments/attachments.routes'));
 
 // Error handler — must be LAST
 app.use(errorHandler);
