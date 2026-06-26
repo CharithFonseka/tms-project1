@@ -1,16 +1,18 @@
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import { SocketProvider } from './context/SocketContext';
 import AppRoutes from './routes/AppRoutes';
 import './App.css';
 
+/**
+ * App root — provides Router + Auth context only.
+ * SocketProvider is intentionally scoped to AppShell (authenticated pages only)
+ * to avoid connecting sockets for unauthenticated users.
+ */
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <SocketProvider>
-          <AppRoutes />
-        </SocketProvider>
+        <AppRoutes />
       </AuthProvider>
     </BrowserRouter>
   );

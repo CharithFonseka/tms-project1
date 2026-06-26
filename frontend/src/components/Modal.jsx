@@ -1,13 +1,43 @@
+/**
+ * Modal — design.md ex-modal-card spec
+ * card-elevated surface (rounded-xl + elevated shadow).
+ * X close button top-right; title in card-title weight.
+ */
 export default function Modal({ open, onClose, title, children }) {
     if (!open) return null;
+
     return (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(4px)' }}>
-            <div className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '28rem', padding: '24px', position: 'relative' }}>
-                <h2 className="text-xl font-semibold gradient-text" style={{ marginBottom: '16px' }}>{title}</h2>
+        <div className="modal-backdrop" onClick={onClose}>
+            <div
+                className="card-elevated"
+                style={{ width: '100%', maxWidth: 480, position: 'relative' }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* Header */}
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginBottom: 20,
+                    }}
+                >
+                    <h2 className="text-card-title">{title}</h2>
+                    <button
+                        onClick={onClose}
+                        className="btn-icon"
+                        id="modal-close-btn"
+                        aria-label="Close"
+                        style={{ flexShrink: 0 }}
+                    >
+                        {/* ✕ icon */}
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <path d="M13 1 1 13M1 1l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+
                 {children}
-                <button onClick={onClose} className="text-secondary" style={{ marginTop: '16px', fontSize: '0.875rem', background: 'none', border: 'none', cursor: 'pointer', transition: 'color var(--transition-fast)' }} onMouseOver={(e) => e.target.style.color = 'var(--text-primary)'} onMouseOut={(e) => e.target.style.color = 'var(--text-secondary)'}>
-                    Close
-                </button>
             </div>
         </div>
     );

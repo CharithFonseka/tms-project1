@@ -1,11 +1,24 @@
+/**
+ * Button — design.md component spec
+ *
+ * variant="primary"   → Notion Blue pill  (.btn-primary)
+ * variant="secondary" → White pill with soft shadow  (.btn-secondary)
+ * variant="utility"   → White, 8px radius, hairline border  (.btn-utility)
+ * variant="danger"    → Red, 8px radius, destructive actions  (.btn-danger)
+ */
 export default function Button({ variant = 'primary', className = '', children, ...props }) {
-    const styles = {
-        primary: 'btn-primary',
-        danger: 'btn-danger',
+    const cls = {
+        primary:   'btn-primary',
         secondary: 'btn-secondary',
+        utility:   'btn-utility',
+        danger:    'btn-danger',
     };
+
     return (
-        <button {...props} className={`${styles[variant] || styles.primary} ${className} ${props.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
+        <button
+            {...props}
+            className={`${cls[variant] ?? 'btn-utility'} ${className}`}
+        >
             {children}
         </button>
     );

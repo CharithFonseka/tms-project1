@@ -1,13 +1,12 @@
-
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { createUserRequest, updateUserRequest } from '../../api/usersApi';
 
 const schema = z.object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
+    name:  z.string().min(2, 'Name must be at least 2 characters'),
     email: z.string().email('Enter a valid email'),
-    role: z.enum(['Admin', 'Project Manager', 'Collaborator']),
+    role:  z.enum(['Admin', 'Project Manager', 'Collaborator']),
 });
 
 export default function UserForm({ existingUser, onSuccess }) {
@@ -23,7 +22,6 @@ export default function UserForm({ existingUser, onSuccess }) {
                 : await createUserRequest(values);
             onSuccess(result);
         } catch (err) {
-            // map backend field-level errors onto the matching input
             if (err.code === 409) {
                 setError('email', { message: err.message });
             } else {
@@ -33,26 +31,45 @@ export default function UserForm({ existingUser, onSuccess }) {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            {errors.root && <p className="text-danger" style={{ padding: '8px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '4px' }}>{errors.root.message}</p>}
+        <form onSubmit={handleSubmit(onSubmit)}>
+            {errors.root && (
+                <div className="alert alert-error" style={{ marginBottom: 16 }}>
+                    <span style={{ flexShrink: 0, fontWeight: 600 }}>✕</span>
+                    <span>{errors.root.message}</span>
+                </div>
+            )}
 
-            <div>
-                <input {...register('name')} placeholder="Full name" className="input-modern" style={{ width: '100%' }} />
-                {errors.name && <p className="text-danger" style={{ fontSize: '0.875rem', marginTop: '4px' }}>{errors.name.message}</p>}
+            <div style={{ marginBottom: 12 }}>
+                <label className="field-label">Full name</label>
+                <input
+                    {...register('name')}
+                    placeholder="Jane Smith"
+                    className={`input-field${errors.name ? ' input-error' : ''}`}
+                />
+                {errors.name && <p className="field-error">{errors.name.message}</p>}
             </div>
-            <div>
-                <input {...register('email')} placeholder="Email" className="input-modern" style={{ width: '100%' }} />
-                {errors.email && <p className="text-danger" style={{ fontSize: '0.875rem', marginTop: '4px' }}>{errors.email.message}</p>}
+
+            <div style={{ marginBottom: 12 }}>
+                <label className="field-label">Email</label>
+                <input
+                    {...register('email')}
+                    placeholder="jane@example.com"
+                    className={`input-field${errors.email ? ' input-error' : ''}`}
+                />
+                {errors.email && <p className="field-error">{errors.email.message}</p>}
             </div>
-            <div>
-                <select {...register('role')} className="input-modern" style={{ width: '100%' }}>
+
+            <div style={{ marginBottom: 24 }}>
+                <label className="field-label">Role</label>
+                <select {...register('role')} className="input-field">
                     <option value="Admin">Admin</option>
                     <option value="Project Manager">Project Manager</option>
                     <option value="Collaborator">Collaborator</option>
                 </select>
             </div>
-            <div style={{ marginTop: '8px' }}>
-                <button type="submit" disabled={isSubmitting} className="btn-primary" style={{ width: 'auto' }}>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button type="submit" disabled={isSubmitting} className="btn-primary">
                     {existingUser ? 'Save changes' : 'Create user'}
                 </button>
             </div>

@@ -33,55 +33,108 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="flex-center gradient-bg" style={{ minHeight: '100vh', padding: '20px' }}>
-            <form onSubmit={handleSubmit(onSubmit)} className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '24rem', padding: '40px 32px' }}>
-                <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                    <h1 className="text-2xl font-bold gradient-text" style={{ marginBottom: '8px' }}>Welcome Back</h1>
-                    <p className="text-sm text-secondary">Sign in to your TMS account</p>
-                </div>
-                
-                {serverError && (
-                    <div className="glass-card text-danger text-sm" style={{ padding: '12px', marginBottom: '24px', textAlign: 'center', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
-                        {serverError}
-                    </div>
-                )}
-                
-                <Input
-                    label="Email Address"
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    icon={
-                        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                    }
-                    {...register('email')}
-                    error={errors.email?.message}
-                />
-
-                <Input
-                    label="Password"
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    icon={
-                        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                        </svg>
-                    }
-                    {...register('password')}
-                    error={errors.password?.message}
-                />
-
-                <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    style={{ width: '100%', marginTop: '16px' }}
+        <div
+            style={{
+                minHeight: '100vh',
+                backgroundColor: 'var(--color-canvas-soft)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 'var(--space-md)',
+            }}
+        >
+            {/* Wordmark above card */}
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    marginBottom: 28,
+                }}
+            >
+                <span
+                    style={{
+                        width: 36,
+                        height: 36,
+                        backgroundColor: 'var(--color-primary)',
+                        borderRadius: 9,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontWeight: 700,
+                        fontSize: 16,
+                    }}
                 >
-                    {isSubmitting ? 'Signing in…' : 'Sign In'}
-                </Button>
-            </form>
+                    T
+                </span>
+                <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.25px', color: 'var(--color-ink)' }}>
+                    TaskFlow
+                </span>
+            </div>
+
+            {/* Auth card */}
+            <div className="card-elevated" style={{ width: '100%', maxWidth: 380 }}>
+                {/* Eyebrow */}
+                <span className="badge-pill" style={{ marginBottom: 16, display: 'inline-flex' }}>
+                    Task Management System
+                </span>
+
+                <h1 className="text-card-title" style={{ marginBottom: 24 }}>
+                    Sign in
+                </h1>
+
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    {serverError && (
+                        <div className="alert alert-error" style={{ marginBottom: 16 }}>
+                            <span style={{ flexShrink: 0, fontWeight: 600 }}>✕</span>
+                            <span>{serverError}</span>
+                        </div>
+                    )}
+
+                    <div style={{ marginBottom: 12 }}>
+                        <label htmlFor="email" className="field-label">Email</label>
+                        <input
+                            id="email"
+                            type="email"
+                            autoComplete="email"
+                            {...register('email')}
+                            className={`input-field${errors.email ? ' input-error' : ''}`}
+                            placeholder="you@example.com"
+                        />
+                        {errors.email && <p className="field-error">{errors.email.message}</p>}
+                    </div>
+
+                    <div style={{ marginBottom: 24 }}>
+                        <label htmlFor="password" className="field-label">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            autoComplete="current-password"
+                            {...register('password')}
+                            className={`input-field${errors.password ? ' input-error' : ''}`}
+                            placeholder="••••••••"
+                        />
+                        {errors.password && <p className="field-error">{errors.password.message}</p>}
+                    </div>
+
+                    <button
+                        id="login-btn"
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="btn-primary"
+                        style={{ width: '100%', justifyContent: 'center' }}
+                    >
+                        {isSubmitting ? 'Signing in…' : 'Sign in'}
+                    </button>
+                </form>
+            </div>
+
+            {/* Footer caption */}
+            <p className="text-caption" style={{ marginTop: 24 }}>
+                Powered by TaskFlow · INTE 21323
+            </p>
         </div>
     );
 }
