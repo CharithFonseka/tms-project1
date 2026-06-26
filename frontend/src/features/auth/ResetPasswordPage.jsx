@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,24 +30,111 @@ export default function ResetPasswordPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-slate-50">
-            <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-sm rounded-lg bg-white p-8 shadow">
-                <h1 className="mb-2 text-2xl font-semibold text-slate-900">Set a new password</h1>
-                <p className="mb-6 text-sm text-slate-500">You must reset your password before continuing.</p>
-                {serverError && <p className="mb-4 rounded bg-red-50 p-2 text-sm text-red-600">{serverError}</p>}
+        <div
+            style={{
+                minHeight: '100vh',
+                backgroundColor: 'var(--color-canvas-soft)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 'var(--space-md)',
+            }}
+        >
+            {/* Wordmark */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 28 }}>
+                <span
+                    style={{
+                        width: 36, height: 36,
+                        backgroundColor: 'var(--color-primary)',
+                        borderRadius: 9,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: '#fff', fontWeight: 700, fontSize: 16,
+                    }}
+                >
+                    T
+                </span>
+                <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.25px', color: 'var(--color-ink)' }}>
+                    TaskFlow
+                </span>
+            </div>
 
-                <label htmlFor="oldPassword" className="mb-1 block text-sm font-medium text-slate-700">Current (temporary) password</label>
-                <input id="oldPassword" type="password" {...register('oldPassword')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
-                {errors.oldPassword && <p className="mb-3 text-sm text-red-600">{errors.oldPassword.message}</p>}
+            {/* Auth card */}
+            <div className="card-elevated" style={{ width: '100%', maxWidth: 380 }}>
+                {/* Required eyebrow badge */}
+                <span
+                    className="badge-pill"
+                    style={{
+                        marginBottom: 16,
+                        display: 'inline-flex',
+                        backgroundColor: '#fff7ed',
+                        color: 'var(--color-accent-orange)',
+                        borderColor: 'transparent',
+                    }}
+                >
+                    Action required
+                </span>
 
-                <label htmlFor="newPassword" className="mb-1 block text-sm font-medium text-slate-700">New password</label>
-                <input id="newPassword" type="password" {...register('newPassword')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
-                {errors.newPassword && <p className="mb-3 text-sm text-red-600">{errors.newPassword.message}</p>}
+                <h1 className="text-card-title" style={{ marginBottom: 6 }}>
+                    Set your password
+                </h1>
+                <p className="text-caption" style={{ marginBottom: 24 }}>
+                    You must set a permanent password before you can access the system.
+                </p>
 
-                <button type="submit" disabled={isSubmitting} className="mt-4 w-full rounded bg-indigo-600 py-2 font-medium text-white hover:bg-indigo-700 disabled:opacity-50">
-                    {isSubmitting ? 'Updating…' : 'Update password'}
-                </button>
-            </form>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    {serverError && (
+                        <div className="alert alert-error" style={{ marginBottom: 16 }}>
+                            <span style={{ flexShrink: 0, fontWeight: 600 }}>✕</span>
+                            <span>{serverError}</span>
+                        </div>
+                    )}
+
+                    <div style={{ marginBottom: 12 }}>
+                        <label htmlFor="oldPassword" className="field-label">
+                            Current (temporary) password
+                        </label>
+                        <input
+                            id="oldPassword"
+                            type="password"
+                            autoComplete="current-password"
+                            {...register('oldPassword')}
+                            className={`input-field${errors.oldPassword ? ' input-error' : ''}`}
+                            placeholder="••••••••"
+                        />
+                        {errors.oldPassword && <p className="field-error">{errors.oldPassword.message}</p>}
+                    </div>
+
+                    <div style={{ marginBottom: 24 }}>
+                        <label htmlFor="newPassword" className="field-label">
+                            New password
+                        </label>
+                        <input
+                            id="newPassword"
+                            type="password"
+                            autoComplete="new-password"
+                            {...register('newPassword')}
+                            className={`input-field${errors.newPassword ? ' input-error' : ''}`}
+                            placeholder="Min. 8 chars, uppercase, number, symbol"
+                        />
+                        {errors.newPassword && <p className="field-error">{errors.newPassword.message}</p>}
+                    </div>
+
+                    <button
+                        id="reset-password-btn"
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="btn-primary"
+                        style={{ width: '100%', justifyContent: 'center' }}
+                    >
+                        {isSubmitting ? 'Updating…' : 'Update password'}
+                    </button>
+                </form>
+            </div>
+
+            <p className="text-caption" style={{ marginTop: 24 }}>
+                Powered by TaskFlow · INTE 21323
+            </p>
         </div>
     );
 }

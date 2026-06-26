@@ -2,66 +2,153 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { createTaskRequest } from '../../api/tasksApi';
-import { listUsersRequest } from '../../api/usersApi'; // shared with Person 4 — already exists
+import { listUsersRequest } from '../../api/usersApi';
 import { useEffect, useState } from 'react';
 
 const schema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  due_date: z.string().min(1, 'Due date is required'),
-  priority: z.enum(['Low', 'Medium', 'High']),
-  assignees: z.array(z.string()).min(1, 'Select at least one assignee'),
+    title:     z.string().min(1, 'Title is required'),
+    due_date:  z.string().min(1, 'Due date is required'),
+    priority:  z.enum(['Low', 'Medium', 'High']),
+    assignees: z.array(z.string()).min(1, 'Select at least one assignee'),
 });
 
 export default function TaskForm({ onClose, onCreated }) {
-  const [users, setUsers] = useState([]);
-  const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm({
-    resolver: zodResolver(schema),
-    defaultValues: { priority: 'Medium', assignees: [] },
-  });
+    const [users, setUsers] = useState([]);
+    const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm({
+        resolver: zodResolver(schema),
+        defaultValues: { priority: 'Medium', assignees: [] },
+    });
 
-  useEffect(() => { listUsersRequest({}).then((res) => setUsers(res.data)); }, []);
+    useEffect(() => { listUsersRequest({}).then((res) => setUsers(res.data)); }, []);
 
-  function toggleAssignee(id) {
-    const current = watch('assignees');
-    setValue('assignees', current.includes(id) ? current.filter((a) => a !== id) : [...current, id]);
-  }
+    function toggleAssignee(id) {
+        const current = watch('assignees');
+        setValue(
+            'assignees',
+            current.includes(id) ? current.filter((a) => a !== id) : [...current, id],
+        );
+    }
 
-  async function onSubmit(values) {
-    await createTaskRequest(values);
-    onCreated();
-    onClose();
-  }
+    async function onSubmit(values) {
+        await createTaskRequest(values);
+        onCreated();
+        onClose();
+    }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-        <h2 className="mb-4 text-lg font-semibold">New Task</h2>
-        <input {...register('title')} placeholder="Title" className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
-        {errors.title && <p className="mb-2 text-sm text-red-600">{errors.title.message}</p>}
+    const selectedAssignees = watch('assignees');
 
-        <input type="date" {...register('due_date')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
-        {errors.due_date && <p className="mb-2 text-sm text-red-600">{errors.due_date.message}</p>}
+    return (
+        <div className="modal-backdrop" onClick={onClose}>
+            <div
+                className="card-elevated"
+                style={{ width: '100%', maxWidth: 520 }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* Modal header */}
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginBottom: 24,
+                    }}
+                >
+                    <h2 className="text-card-title">New Task</h2>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="btn-icon"
+                        aria-label="Close"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <path d="M13 1 1 13M1 1l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                    </button>
+                </div>
 
-        <select {...register('priority')} className="mb-3 w-full rounded border border-slate-300 px-3 py-2">
-          <option>Low</option><option>Medium</option><option>High</option>
-        </select>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    {/* Title */}
+                    <div style={{ marginBottom: 12 }}>
+                        <label className="field-label">Title</label>
+                        <input
+                            {...register('title')}
+                            placeholder="Task title"
+                            className={`input-field${errors.title ? ' input-error' : ''}`}
+                        />
+                        {errors.title && <p className="field-error">{errors.title.message}</p>}
+                    </div>
 
-        <p className="mb-1 text-sm font-medium text-slate-700">Assignees</p>
-        <div className="mb-3 max-h-32 space-y-1 overflow-y-auto">
-          {users.map((u) => (
-            <label key={u.id} className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={watch('assignees').includes(u.id)} onChange={() => toggleAssignee(u.id)} />
-              {u.name}
-            </label>
-          ))}
+                    {/* Due date + Priority — two columns */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+                        <div>
+                            <label className="field-label">Due date</label>
+                            <input
+                                type="date"
+                                {...register('due_date')}
+                                className={`input-field${errors.due_date ? ' input-error' : ''}`}
+                            />
+                            {errors.due_date && <p className="field-error">{errors.due_date.message}</p>}
+                        </div>
+                        <div>
+                            <label className="field-label">Priority</label>
+                            <select {...register('priority')} className="input-field">
+                                <option>Low</option>
+                                <option>Medium</option>
+                                <option>High</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Assignees */}
+                    <div style={{ marginBottom: 24 }}>
+                        <label className="field-label">
+                            Assignees
+                            {selectedAssignees.length > 0 && (
+                                <span
+                                    className="badge-pill"
+                                    style={{ marginLeft: 8, verticalAlign: 'middle' }}
+                                >
+                                    {selectedAssignees.length} selected
+                                </span>
+                            )}
+                        </label>
+                        <div
+                            style={{
+                                maxHeight: 160,
+                                overflowY: 'auto',
+                                border: '1px solid #ddd',
+                                borderRadius: 'var(--rounded-xs)',
+                                padding: '4px 0',
+                            }}
+                        >
+                            {users.map((u) => (
+                                <label key={u.id} className="checkbox-row">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedAssignees.includes(u.id)}
+                                        onChange={() => toggleAssignee(u.id)}
+                                    />
+                                    <span className="text-body-sm">{u.name}</span>
+                                    <span className="text-caption" style={{ marginLeft: 'auto' }}>
+                                        {u.role}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                        {errors.assignees && <p className="field-error">{errors.assignees.message}</p>}
+                    </div>
+
+                    {/* Actions */}
+                    <div style={{ display: 'flex', gap: 'var(--space-sm)', justifyContent: 'flex-end' }}>
+                        <button type="button" onClick={onClose} className="btn-utility">
+                            Cancel
+                        </button>
+                        <button type="submit" disabled={isSubmitting} className="btn-primary">
+                            {isSubmitting ? 'Creating…' : 'Create task'}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-        {errors.assignees && <p className="mb-2 text-sm text-red-600">{errors.assignees.message}</p>}
-
-        <div className="flex gap-2">
-          <button type="submit" disabled={isSubmitting} className="rounded bg-indigo-600 px-4 py-2 text-white disabled:opacity-50">Create</button>
-          <button type="button" onClick={onClose} className="rounded bg-slate-100 px-4 py-2 text-slate-700">Cancel</button>
-        </div>
-      </form>
-    </div>
-  );
+    );
 }

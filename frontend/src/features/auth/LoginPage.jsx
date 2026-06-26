@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -34,28 +33,108 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-slate-50">
-            <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-sm rounded-lg bg-white p-8 shadow">
-                <h1 className="mb-6 text-2xl font-semibold text-slate-900">Sign in</h1>
-                {serverError && (
-                    <p className="mb-4 rounded bg-red-50 p-2 text-sm text-red-600">{serverError}</p>
-                )}
-                <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">Email</label>
-                <input id="email" {...register('email')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
-                {errors.email && <p className="mb-3 text-sm text-red-600">{errors.email.message}</p>}
-
-                <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-700">Password</label>
-                <input id="password" type="password" {...register('password')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
-                {errors.password && <p className="mb-3 text-sm text-red-600">{errors.password.message}</p>}
-
-                <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="mt-4 w-full rounded bg-indigo-600 py-2 font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+        <div
+            style={{
+                minHeight: '100vh',
+                backgroundColor: 'var(--color-canvas-soft)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 'var(--space-md)',
+            }}
+        >
+            {/* Wordmark above card */}
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    marginBottom: 28,
+                }}
+            >
+                <span
+                    style={{
+                        width: 36,
+                        height: 36,
+                        backgroundColor: 'var(--color-primary)',
+                        borderRadius: 9,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontWeight: 700,
+                        fontSize: 16,
+                    }}
                 >
-                    {isSubmitting ? 'Signing in…' : 'Sign in'}
-                </button>
-            </form>
+                    T
+                </span>
+                <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.25px', color: 'var(--color-ink)' }}>
+                    TaskFlow
+                </span>
+            </div>
+
+            {/* Auth card */}
+            <div className="card-elevated" style={{ width: '100%', maxWidth: 380 }}>
+                {/* Eyebrow */}
+                <span className="badge-pill" style={{ marginBottom: 16, display: 'inline-flex' }}>
+                    Task Management System
+                </span>
+
+                <h1 className="text-card-title" style={{ marginBottom: 24 }}>
+                    Sign in
+                </h1>
+
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    {serverError && (
+                        <div className="alert alert-error" style={{ marginBottom: 16 }}>
+                            <span style={{ flexShrink: 0, fontWeight: 600 }}>✕</span>
+                            <span>{serverError}</span>
+                        </div>
+                    )}
+
+                    <div style={{ marginBottom: 12 }}>
+                        <label htmlFor="email" className="field-label">Email</label>
+                        <input
+                            id="email"
+                            type="email"
+                            autoComplete="email"
+                            {...register('email')}
+                            className={`input-field${errors.email ? ' input-error' : ''}`}
+                            placeholder="you@example.com"
+                        />
+                        {errors.email && <p className="field-error">{errors.email.message}</p>}
+                    </div>
+
+                    <div style={{ marginBottom: 24 }}>
+                        <label htmlFor="password" className="field-label">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            autoComplete="current-password"
+                            {...register('password')}
+                            className={`input-field${errors.password ? ' input-error' : ''}`}
+                            placeholder="••••••••"
+                        />
+                        {errors.password && <p className="field-error">{errors.password.message}</p>}
+                    </div>
+
+                    <button
+                        id="login-btn"
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="btn-primary"
+                        style={{ width: '100%', justifyContent: 'center' }}
+                    >
+                        {isSubmitting ? 'Signing in…' : 'Sign in'}
+                    </button>
+                </form>
+            </div>
+
+            {/* Footer caption */}
+            <p className="text-caption" style={{ marginTop: 24 }}>
+                Powered by TaskFlow · INTE 21323
+            </p>
         </div>
     );
 }

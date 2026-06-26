@@ -6,78 +6,181 @@ import TaskForm from './TaskForm';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 
-const COLUMNS = ['To Do', 'In Progress', 'Completed'];
+const COLUMNS = [
+    { status: 'To Do',       dotClass: 'status-dot status-dot-todo',       label: 'To Do' },
+    { status: 'In Progress', dotClass: 'status-dot status-dot-inprogress', label: 'In Progress' },
+    { status: 'Completed',   dotClass: 'status-dot status-dot-done',       label: 'Completed' },
+];
 
 export default function TaskBoard() {
-  const { user } = useAuth();
-  const [tasks, setTasks] = useState([]);
-  const [filters, setFilters] = useState({ status: '', priority: '', search: '' });
-  const [showForm, setShowForm] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(null);
+    const { user } = useAuth();
+    const [tasks, setTasks] = useState([]);
+    const [filters, setFilters] = useState({ status: '', priority: '', search: '' });
+    const [showForm, setShowForm] = useState(false);
+    const [confirmDelete, setConfirmDelete] = useState(null);
 
-  async function refresh() {
-    const res = await listTasksRequest(filters);
-    setTasks(res.data);
-  }
+    async function refresh() {
+        const res = await listTasksRequest(filters);
+        setTasks(res.data);
+    }
 
-  useEffect(() => { refresh(); }, [filters]);
+    useEffect(() => { refresh(); }, [filters]);
 
-  const socket = useSocket();
-  useEffect(() => {
-    if (!socket) return;
-    const handler = (notification) => {
-      if (['task_assigned', 'status_changed', 'comment_added'].includes(notification.type)) {
-        refresh(); // simplest correct approach: just refetch on any task-relevant event
-      }
-    };
-    socket.on('notification:new', handler);
-    return () => socket.off('notification:new', handler);
-  }, [socket]);
+    const socket = useSocket();
+    useEffect(() => {
+        if (!socket) return;
+        const handler = (notification) => {
+            if (['task_assigned', 'status_changed', 'comment_added'].includes(notification.type)) {
+                refresh();
+            }
+        };
+        socket.on('notification:new', handler);
+        return () => socket.off('notification:new', handler);
+    }, [socket]);
 
-  async function handleStatusChange(taskId, newStatus) {
-    await updateTaskStatusRequest(taskId, newStatus);
-    refresh();
-  }
+    async function handleStatusChange(taskId, newStatus) {
+        await updateTaskStatusRequest(taskId, newStatus);
+        refresh();
+    }
 
-  async function handleDelete(taskId) {
-    await deleteTaskRequest(taskId);
-    refresh();
-  }
+    async function handleDelete(taskId) {
+        await deleteTaskRequest(taskId);
+        refresh();
+    }
 
-  const canCreate = user.role === 'Admin' || user.role === 'Project Manager';
+    const canCreate = user.role === 'Admin' || user.role === 'Project Manager';
 
-  return (
-    <div className="p-8">
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-900">Tasks</h1>
-        {canCreate && (
-          <button onClick={() => setShowForm(true)} className="rounded bg-indigo-600 px-4 py-2 text-white">
-            + New Task
-          </button>
-        )}
-      </div>
-      <TaskFilters filters={filters} onChange={setFilters} />
-      <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-        {COLUMNS.map((col) => (
-          <div key={col} className="rounded-lg bg-slate-100 p-3">
-            <h2 className="mb-3 text-sm font-semibold text-slate-600">{col}</h2>
-            {tasks.filter((t) => t.status === col).map((t) => (
-              <TaskCard key={t.id} task={t} onStatusChange={handleStatusChange} onDelete={canCreate ? handleDelete : null} />
-            ))}
-          </div>
-        ))}
-      </div>
-      {showForm && <TaskForm onClose={() => setShowForm(false)} onCreated={refresh} />}
-      {confirmDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="rounded-lg bg-white p-6 shadow-lg">
-            <p className="mb-4 text-sm">Delete "{confirmDelete.title}"? This also removes its comments and attachments.</p>
-            <button onClick={async () => { await deleteTaskRequest(confirmDelete.id); setConfirmDelete(null); refresh(); }} className="mr-2 rounded bg-red-600 px-4 py-2 text-white">Delete</button>
-            <button onClick={() => setConfirmDelete(null)} className="rounded bg-slate-100 px-4 py-2">Cancel</button>
-          </div>
+    return (
+        <div>
+            {/* Page header */}
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: 'var(--space-lg)',
+                    flexWrap: 'wrap',
+                    gap: 'var(--space-sm)',
+                }}
+            >
+                <div>
+                    <h1 className="text-display" style={{ fontSize: 26, letterSpacing: '-0.625px' }}>
+                        Tasks
+                    </h1>
+                    <p className="text-caption" style={{ marginTop: 2 }}>
+                        Manage and track your team's work
+                    </p>
+                </div>
+                {canCreate && (
+                    <button
+                        id="new-task-btn"
+                        className="btn-primary"
+                        onClick={() => setShowForm(true)}
+                    >
+                        + New Task
+                    </button>
+                )}
+            </div>
+
+            {/* Filters */}
+            <TaskFilters filters={filters} onChange={setFilters} />
+
+            {/* Kanban board */}
+            <div
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gap: 'var(--space-md)',
+                    marginTop: 'var(--space-lg)',
+                }}
+                className="kanban-grid"
+            >
+                {COLUMNS.map((col) => {
+                    const colTasks = tasks.filter((t) => t.status === col.status);
+                    return (
+                        <div key={col.status} className="kanban-column">
+                            {/* Column header */}
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 8,
+                                    paddingBottom: 'var(--space-sm)',
+                                    borderBottom: '1px solid var(--color-hairline)',
+                                }}
+                            >
+                                <span className={col.dotClass} />
+                                <span className="text-eyebrow">{col.label}</span>
+                                <span
+                                    className="badge-pill"
+                                    style={{
+                                        marginLeft: 'auto',
+                                        backgroundColor: 'var(--color-canvas)',
+                                        color: 'var(--color-ink-muted)',
+                                        fontSize: 11,
+                                    }}
+                                >
+                                    {colTasks.length}
+                                </span>
+                            </div>
+
+                            {/* Task cards */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                                {colTasks.map((t) => (
+                                    <TaskCard
+                                        key={t.id}
+                                        task={t}
+                                        onStatusChange={handleStatusChange}
+                                        onDelete={canCreate ? handleDelete : null}
+                                    />
+                                ))}
+                                {colTasks.length === 0 && (
+                                    <div className="empty-state">
+                                        <span style={{ fontSize: 22, opacity: 0.4 }}>◻</span>
+                                        <p className="text-caption">No tasks here</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {/* Task form modal */}
+            {showForm && <TaskForm onClose={() => setShowForm(false)} onCreated={refresh} />}
+
+            {/* Delete confirmation modal */}
+            {confirmDelete && (
+                <div className="modal-backdrop" onClick={() => setConfirmDelete(null)}>
+                    <div
+                        className="card-elevated"
+                        style={{ width: '100%', maxWidth: 420 }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <h2 className="text-card-title" style={{ marginBottom: 8 }}>
+                            Delete task?
+                        </h2>
+                        <p className="text-body-sm" style={{ marginBottom: 24 }}>
+                            "{confirmDelete.title}" and all its comments and attachments will be permanently removed.
+                        </p>
+                        <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                            <button
+                                className="btn-danger"
+                                onClick={async () => {
+                                    await deleteTaskRequest(confirmDelete.id);
+                                    setConfirmDelete(null);
+                                    refresh();
+                                }}
+                            >
+                                Delete
+                            </button>
+                            <button className="btn-utility" onClick={() => setConfirmDelete(null)}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-
-  );
+    );
 }
