@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const projectsController = require('./projects.controller');
-const { requireAuth, requireRole } = require('../../middlewares/auth.middleware');
+const requireAuth = require('../../middlewares/jwt.middleware');
+const requireRole = require('../../middlewares/rbac.middleware');
 
 router.use(requireAuth);
 

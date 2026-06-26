@@ -53,7 +53,7 @@ const path = require('path');
 app.use(express.static(path.join(__dirname, '../public')));
 
 // Catch-all route to serve the React app for non-API routes
-app.get('*', (req, res, next) => {
+app.get(/^.*$/, (req, res, next) => {
   if (req.path.startsWith('/api')) return next();
   res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
