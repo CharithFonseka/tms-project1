@@ -12,6 +12,7 @@ export default function UserList() {
     const [total, setTotal] = useState(0);
     const [showCreate, setShowCreate] = useState(false);
     const [confirmTarget, setConfirmTarget] = useState(null);
+    const [newlyCreatedUser, setNewlyCreatedUser] = useState(null);
     const [triggerRefetch, setTriggerRefetch] = useState(0);
 
     useEffect(() => {
@@ -115,9 +116,33 @@ export default function UserList() {
             </div>
             
             <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Add User">
-                <UserForm onSuccess={() => { setShowCreate(false); setTriggerRefetch(t => t + 1); setPage(1); }} />
+                <UserForm onSuccess={(user) => { 
+                    setShowCreate(false); 
+                    setTriggerRefetch(t => t + 1); 
+                    setPage(1); 
+                    if (user && user.tempPassword) {
+                        setNewlyCreatedUser(user);
+                    }
+                }} />
             </Modal>
             
+            <Modal open={!!newlyCreatedUser} onClose={() => setNewlyCreatedUser(null)} title="User Created Successfully!">
+                <div style={{ marginBottom: '24px' }}>
+                    <p className="text-secondary" style={{ marginBottom: '16px' }}>
+                        The new user <strong>{newlyCreatedUser?.name}</strong> has been created. 
+                        Since the email server is not fully configured, please copy and securely share this temporary password with them so they can log in:
+                    </p>
+                    <div style={{ padding: '16px', background: 'rgba(99, 102, 241, 0.1)', border: '1px solid var(--accent-primary)', borderRadius: '8px', textAlign: 'center' }}>
+                        <code style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--accent-primary)' }}>
+                            {newlyCreatedUser?.tempPassword}
+                        </code>
+                    </div>
+                </div>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                    <Button onClick={() => setNewlyCreatedUser(null)}>Done</Button>
+                </div>
+            </Modal>
+
             <Modal open={!!confirmTarget} onClose={() => setConfirmTarget(null)} title="Deactivate user?">
                 <p className="text-secondary" style={{ marginBottom: '24px' }}>
                     {confirmTarget?.name} will no longer be able to log in. This can be reversed later by an Admin.

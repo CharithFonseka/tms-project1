@@ -23,9 +23,9 @@ export default function UserForm({ existingUser, onSuccess }) {
                 : await createUserRequest(values);
             onSuccess(result);
         } catch (err) {
-            // SRS requirement: map backend field-level errors onto the matching input
+            // map backend field-level errors onto the matching input
             if (err.code === 409) {
-                setError('email', { message: err.message }); // e.g. "Email already in use"
+                setError('email', { message: err.message });
             } else {
                 setError('root', { message: err.message || 'Something went wrong' });
             }

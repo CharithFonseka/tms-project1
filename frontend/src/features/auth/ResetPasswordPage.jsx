@@ -5,6 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { resetPasswordRequest } from '../../api/authApi';
+import Input from '../../components/Input';
+import Button from '../../components/Button';
 
 const schema = z.object({
     oldPassword: z.string().min(1, 'Current password is required'),
@@ -31,24 +33,45 @@ export default function ResetPasswordPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-slate-50">
-            <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-sm rounded-lg bg-white p-8 shadow">
-                <h1 className="mb-2 text-2xl font-semibold text-slate-900">Set a new password</h1>
-                <p className="mb-6 text-sm text-slate-500">You must reset your password before continuing.</p>
-                {serverError && <p className="mb-4 rounded bg-red-50 p-2 text-sm text-red-600">{serverError}</p>}
+        <div className="flex-center gradient-bg" style={{ minHeight: '100vh', padding: '20px' }}>
+            <form onSubmit={handleSubmit(onSubmit)} className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '24rem', padding: '40px 32px' }}>
+                <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                    <h1 className="text-2xl font-bold gradient-text" style={{ marginBottom: '8px' }}>Set a New Password</h1>
+                    <p className="text-sm text-secondary">You must reset your password before continuing.</p>
+                </div>
 
-                <label htmlFor="oldPassword" className="mb-1 block text-sm font-medium text-slate-700">Current (temporary) password</label>
-                <input id="oldPassword" type="password" {...register('oldPassword')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
-                {errors.oldPassword && <p className="mb-3 text-sm text-red-600">{errors.oldPassword.message}</p>}
+                {serverError && (
+                    <div className="glass-card text-danger text-sm" style={{ padding: '12px', marginBottom: '24px', textAlign: 'center', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                        {serverError}
+                    </div>
+                )}
 
-                <label htmlFor="newPassword" className="mb-1 block text-sm font-medium text-slate-700">New password</label>
-                <input id="newPassword" type="password" {...register('newPassword')} className="mb-1 w-full rounded border border-slate-300 px-3 py-2" />
-                {errors.newPassword && <p className="mb-3 text-sm text-red-600">{errors.newPassword.message}</p>}
+                <Input
+                    label="Current (Temporary) Password"
+                    id="oldPassword"
+                    type="password"
+                    placeholder="••••••••"
+                    {...register('oldPassword')}
+                    error={errors.oldPassword?.message}
+                />
 
-                <button type="submit" disabled={isSubmitting} className="mt-4 w-full rounded bg-indigo-600 py-2 font-medium text-white hover:bg-indigo-700 disabled:opacity-50">
-                    {isSubmitting ? 'Updating…' : 'Update password'}
-                </button>
+                <Input
+                    label="New Password"
+                    id="newPassword"
+                    type="password"
+                    placeholder="••••••••"
+                    {...register('newPassword')}
+                    error={errors.newPassword?.message}
+                />
+
+                <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    style={{ width: '100%', marginTop: '16px' }}
+                >
+                    {isSubmitting ? 'Updating…' : 'Update Password'}
+                </Button>
             </form>
         </div>
     );
-}
+}
