@@ -84,7 +84,7 @@ export default function TaskForm({ onClose, onCreated }) {
             id="title"
             {...register('title')} 
             placeholder="e.g., Design user flow mockups" 
-            className="w-full bg-slate-950/65 border border-slate-800/80 text-slate-200 placeholder-slate-600 rounded-lg px-3.5 py-2.5 text-sm transition-all outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20" 
+            className="w-full bg-slate-950/65 border border-slate-800/80 text-slate-200 placeholder-slate-600 rounded-lg px-4 py-3 text-base transition-all outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20" 
           />
           {errors.title && <p className="text-xs text-rose-500 mt-1.5">{errors.title.message}</p>}
         </div>
@@ -98,7 +98,7 @@ export default function TaskForm({ onClose, onCreated }) {
               id="due_date"
               type="date" 
               {...register('due_date')} 
-              className="w-full bg-slate-950/65 border border-slate-800/80 text-slate-200 rounded-lg px-3.5 py-2.5 text-sm transition-all outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20" 
+              className="w-full bg-slate-950/65 border border-slate-800/80 text-slate-200 rounded-lg px-4 py-3 text-base transition-all outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20" 
             />
             {errors.due_date && <p className="text-xs text-rose-500 mt-1.5">{errors.due_date.message}</p>}
           </div>
@@ -110,7 +110,7 @@ export default function TaskForm({ onClose, onCreated }) {
               <select 
                 id="priority"
                 {...register('priority')} 
-                className="w-full bg-slate-950/65 border border-slate-800/80 text-slate-200 rounded-lg px-3.5 py-2.5 text-sm transition-all outline-none appearance-none cursor-pointer focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20"
+                className="w-full bg-slate-950/65 border border-slate-800/80 text-slate-200 rounded-lg px-4 py-3 text-base transition-all outline-none appearance-none cursor-pointer focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20"
               >
                 <option value="Low">Low</option>
                 <option value="Medium">Medium</option>
@@ -132,10 +132,10 @@ export default function TaskForm({ onClose, onCreated }) {
           {/* Dropdown Trigger */}
           <div 
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="w-full min-h-[44px] bg-slate-950/65 border border-slate-800/80 hover:border-slate-700/80 rounded-lg p-2 flex flex-wrap gap-1.5 items-center cursor-pointer select-none transition-colors"
+            className="w-full min-h-[50px] bg-slate-950/65 border border-slate-800/80 hover:border-slate-700/80 rounded-lg px-4 py-3 flex flex-wrap gap-1.5 items-center cursor-pointer select-none transition-colors"
           >
             {selectedAssignees.length === 0 ? (
-              <span className="text-slate-500 text-sm pl-1.5">Select assignees...</span>
+              <span className="text-slate-500 text-base">Select assignees...</span>
             ) : (
               selectedAssignees.map((id) => {
                 const user = users.find((u) => u.id === id);
@@ -210,14 +210,14 @@ export default function TaskForm({ onClose, onCreated }) {
           <button 
             type="button" 
             onClick={onClose} 
-            className="px-4 py-2 text-sm font-semibold text-slate-400 hover:text-slate-200 bg-slate-850 hover:bg-slate-800 border border-slate-800 rounded-lg transition-all"
+            className="px-6 py-2.5 text-base font-semibold text-slate-400 hover:text-slate-200 bg-slate-850 hover:bg-slate-800 border border-slate-800 rounded-lg transition-all"
           >
             Cancel
           </button>
           <button 
             type="submit" 
             disabled={isSubmitting} 
-            className="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 border-0 rounded-lg disabled:opacity-50 transition-all flex items-center gap-1.5"
+            className="px-7 py-2.5 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 border-0 rounded-lg disabled:opacity-50 transition-all flex items-center gap-1.5"
           >
             {isSubmitting ? 'Creating...' : 'Create'}
           </button>
