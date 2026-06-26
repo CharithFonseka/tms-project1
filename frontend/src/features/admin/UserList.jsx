@@ -69,8 +69,8 @@ export default function UserList() {
                                 <th style={{ padding: '12px 16px', fontWeight: '500' }}>Email</th>
                                 <th style={{ padding: '12px 16px', fontWeight: '500' }}>Role</th>
                                 <th style={{ padding: '12px 16px', fontWeight: '500' }}>Status</th>
-                                <th style={{ padding: '12px 16px', fontWeight: '500' }}></th>
                                 <th style={{ padding: '12px 16px', fontWeight: '500' }}>Actions</th>
+                                <th style={{ padding: '12px 16px', fontWeight: '500', textAlign: 'right' }}></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -90,14 +90,6 @@ export default function UserList() {
                                         </span>
                                     </td>
                                     <td style={{ padding: '16px' }}>
-                                        <button 
-                                            onClick={() => setEditingUser(u)}
-                                            style={{ background: 'none', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer', fontSize: '0.875rem', fontWeight: '500' }}
-                                        >
-                                            Edit
-                                        </button>
-                                    </td>
-                                    <td style={{ padding: '16px' }}>
                                         {u.is_active && (
                                             <button 
                                                 onClick={() => setConfirmTarget(u)}
@@ -106,6 +98,14 @@ export default function UserList() {
                                                 Deactivate
                                             </button>
                                         )}
+                                    </td>
+                                    <td style={{ padding: '16px', textAlign: 'right' }}>
+                                        <button 
+                                            onClick={() => setEditingUser(u)}
+                                            style={{ background: 'none', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer', fontSize: '0.875rem', fontWeight: '500' }}
+                                        >
+                                            Edit
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
