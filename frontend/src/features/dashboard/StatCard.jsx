@@ -7,13 +7,13 @@ export default function StatCard({ title, value, icon, color = 'indigo' }) {
     };
     
     return (
-        <div className="glass-panel p-6 rounded-2xl flex items-center gap-4 border bg-slate-900/35 border-slate-800/80 hover:border-slate-700/80 transition-colors">
-            <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-2xl border ${colors[color] || colors.indigo}`}>
+        <div className="glass-panel p-6 rounded-2xl flex items-center gap-5 border bg-slate-900/35 border-slate-800/80 hover:border-slate-700/80 transition-colors shadow-lg">
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl border bg-opacity-10 ${colors[color] || colors.indigo}`}>
                 {icon}
             </div>
-            <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{title}</p>
-                <p className="text-3xl font-extrabold text-slate-100 mt-1">{value}</p>
+            <div className="flex flex-col">
+                <p className="text-3xl font-extrabold text-slate-100 leading-tight">{value}</p>
+                <p className="text-xs font-semibold text-slate-400 mt-1">{title}</p>
             </div>
         </div>
     );

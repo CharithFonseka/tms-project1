@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { listTasksRequest } from '../../api/tasksApi';
 import StatCard from './StatCard';
+import TaskBoard from '../tasks/TaskBoard';
 
 export default function ManagerDashboard() {
     const [stats, setStats] = useState({ total: 0, todo: 0, inProgress: 0, completed: 0, highPriority: 0 });
@@ -31,14 +32,8 @@ export default function ManagerDashboard() {
                 <StatCard title="High Priority" value={stats.highPriority} icon="🔥" color="rose" />
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="glass-panel p-6 rounded-2xl border bg-slate-900/35 border-slate-800/80">
-                    <h2 className="text-lg font-bold text-slate-200 mb-4">Task Completion Progress</h2>
-                    <div className="w-full bg-slate-800/50 rounded-full h-4 mb-2 overflow-hidden border border-slate-700/50">
-                        <div className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-4 rounded-full" style={{ width: `${stats.total ? (stats.completed / stats.total) * 100 : 0}%` }}></div>
-                    </div>
-                    <p className="text-sm font-medium text-slate-400">{stats.completed} out of {stats.total} tasks completed</p>
-                </div>
+            <div className="mt-4">
+                <TaskBoard hideHeader={true} />
             </div>
         </div>
     );

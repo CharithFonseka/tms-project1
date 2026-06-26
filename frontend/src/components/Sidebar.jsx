@@ -44,13 +44,9 @@ export default function Sidebar() {
                 </div>
             </div>
             
-            <div className="p-6 border-t border-slate-800/60 flex flex-col gap-4">
-                <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-800/60">
-                    <p className="text-sm font-bold text-slate-200 truncate">{user.name}</p>
-                    <p className="text-xs font-semibold text-indigo-400 truncate">{user.role}</p>
-                </div>
-                <Button onClick={logout} variant="secondary" className="w-full py-2.5 text-sm font-bold flex items-center justify-center gap-2">
-                    <span>🚪</span> Sign Out
+            <div className="p-6 border-t border-slate-900 flex flex-col gap-4">
+                <Button onClick={logout} variant="secondary" className="w-full py-2.5 text-sm font-bold flex items-center justify-center gap-2 hover:bg-slate-900 border-slate-800">
+                    <span>🚪</span> Logout
                 </Button>
             </div>
         </aside>

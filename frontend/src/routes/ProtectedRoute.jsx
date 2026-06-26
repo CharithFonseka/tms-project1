@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/Sidebar';
+import Header from '../components/Header';
 
 export default function ProtectedRoute({ roles, children }) {
     const { user, loading } = useAuth();
@@ -10,9 +11,12 @@ export default function ProtectedRoute({ roles, children }) {
     return (
         <div className="min-h-screen flex bg-slate-950">
             <Sidebar />
-            <main className="flex-1 overflow-x-hidden overflow-y-auto max-h-screen">
-                {children}
-            </main>
+            <div className="flex flex-col flex-1 overflow-hidden">
+                <Header />
+                <main className="flex-1 overflow-y-auto max-h-screen relative">
+                    {children}
+                </main>
+            </div>
         </div>
     );
 }

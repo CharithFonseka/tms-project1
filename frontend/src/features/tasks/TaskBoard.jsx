@@ -27,7 +27,7 @@ const STATUS_BADGES = {
   'Completed': 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
 };
 
-export default function TaskBoard() {
+export default function TaskBoard({ hideHeader = false }) {
   const { user } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [users, setUsers] = useState([]);
@@ -103,28 +103,30 @@ export default function TaskBoard() {
     });
 
   return (
-    <div className="p-6 md:p-8 flex flex-col gap-6 animate-fade-in">
+    <div className={hideHeader ? "animate-fade-in flex flex-col gap-6" : "p-6 md:p-8 flex flex-col gap-6 animate-fade-in"}>
       
       {/* Header Row */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-100 flex items-center gap-3">
-            <svg className="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-            </svg>
-            Task Board
-          </h1>
-          <p className="text-xs md:text-sm text-slate-400 mt-1">Manage, assign, and organize team tasks.</p>
-        </div>
-        {canCreate && (
-          <button 
-            onClick={() => setShowForm(true)} 
-            className="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 border-0 rounded-lg flex items-center gap-2 transition-all duration-200"
-          >
-            + New Task
-          </button>
-        )}
-      </div>
+      {!hideHeader && (
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-extrabold text-slate-100 flex items-center gap-3">
+                <svg className="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+                Task Board
+              </h1>
+              <p className="text-xs md:text-sm text-slate-400 mt-1">Manage, assign, and organize team tasks.</p>
+            </div>
+            {canCreate && (
+              <button 
+                onClick={() => setShowForm(true)} 
+                className="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 border-0 rounded-lg flex items-center gap-2 transition-all duration-200"
+              >
+                + New Task
+              </button>
+            )}
+          </div>
+      )}
       
       {/* Filters */}
       <div>

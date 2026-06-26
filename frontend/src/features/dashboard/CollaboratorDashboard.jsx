@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { listTasksRequest } from '../../api/tasksApi';
 import { useAuth } from '../../context/AuthContext';
 import StatCard from './StatCard';
+import TaskBoard from '../tasks/TaskBoard';
 
 export default function CollaboratorDashboard() {
     const { user } = useAuth();
@@ -36,16 +37,8 @@ export default function CollaboratorDashboard() {
                 <StatCard title="Action Required" value={stats.highPriority} icon="🔥" color="rose" />
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="glass-panel p-6 rounded-2xl border bg-slate-900/35 border-slate-800/80 flex flex-col gap-4">
-                    <h2 className="text-lg font-bold text-slate-200">My Productivity</h2>
-                    <p className="text-sm font-medium text-slate-400">
-                        You have completed {stats.completed} out of your {stats.total} assigned tasks.
-                    </p>
-                    <div className="w-full bg-slate-800/50 rounded-full h-2 overflow-hidden border border-slate-700/50">
-                        <div className="bg-gradient-to-r from-indigo-500 to-indigo-400 h-2 rounded-full" style={{ width: `${stats.total ? (stats.completed / stats.total) * 100 : 0}%` }}></div>
-                    </div>
-                </div>
+            <div className="mt-4">
+                <TaskBoard hideHeader={true} />
             </div>
         </div>
     );
