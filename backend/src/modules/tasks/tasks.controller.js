@@ -14,6 +14,7 @@ async function listTasksHandler(req, res, next) {
       {
         status,
         priority,
+        project_id: req.query.project_id,
         sortBy,
         order,
         page: page ? parseInt(page) : undefined,

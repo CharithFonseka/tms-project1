@@ -1,3 +1,6 @@
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
 /* Priority badge classes — sticker palette, decoration only (design.md) */
 const PRIORITY_CLS = {
     Low:    'badge-pill badge-priority-low',
@@ -23,20 +26,35 @@ function formatDate(dateStr) {
 }
 
 export default function TaskCard({ task, onStatusChange, onDelete }) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+        id: task.id,
+        data: { type: 'Task', task }
+    });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+        padding: 'var(--space-md)',
+        boxShadow: isDragging ? 'var(--shadow-elevated)' : 'var(--shadow-soft)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+        cursor: isDragging ? 'grabbing' : 'grab',
+        backgroundColor: 'var(--color-surface)',
+        position: 'relative',
+        zIndex: isDragging ? 100 : 1,
+    };
+
     const next = NEXT_STATUS[task.status];
 
     return (
         <div
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
             className="card"
-            style={{
-                padding: 'var(--space-md)',
-                boxShadow: 'var(--shadow-soft)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 10,
-                transition: 'box-shadow 0.15s ease',
-                cursor: 'default',
-            }}
         >
             {/* Title row */}
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
@@ -72,14 +90,22 @@ export default function TaskCard({ task, onStatusChange, onDelete }) {
                     <button
                         className="btn-utility"
                         style={{ fontSize: 12, padding: '3px 10px' }}
-                        onClick={() => onStatusChange(task.id, next)}
+                        onPointerDown={(e) => e.stopPropagation()} // prevent drag on button click
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onStatusChange(task.id, next);
+                        }}
                     >
                         → {next}
                     </button>
                 )}
                 {onDelete && (
                     <button
-                        onClick={() => onDelete(task.id)}
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(task.id);
+                        }}
                         style={{
                             background: 'none',
                             border: 'none',
@@ -97,4 +123,3 @@ export default function TaskCard({ task, onStatusChange, onDelete }) {
         </div>
     );
 }
-

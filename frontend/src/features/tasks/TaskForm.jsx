@@ -12,7 +12,7 @@ const schema = z.object({
     assignees: z.array(z.string()).min(1, 'Select at least one assignee'),
 });
 
-export default function TaskForm({ onClose, onCreated }) {
+export default function TaskForm({ onClose, onCreated, defaultProjectId }) {
     const [users, setUsers] = useState([]);
     const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(schema),
@@ -30,6 +30,9 @@ export default function TaskForm({ onClose, onCreated }) {
     }
 
     async function onSubmit(values) {
+        if (defaultProjectId) {
+            values.project_id = defaultProjectId;
+        }
         await createTaskRequest(values);
         onCreated();
         onClose();

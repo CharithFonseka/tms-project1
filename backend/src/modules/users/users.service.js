@@ -3,6 +3,7 @@ const supabase = require('../../config/db');
 const { hashPassword } = require('../../utils/password.util');
 const ApiError = require('../../utils/ApiError');
 const { sendWelcomeEmail } = require('../../utils/mailer');
+const { createNotification } = require('../notifications/notifications.service');
 
 async function createUser({ name, email, role }) {
   const { data: existing } = await supabase.from('Users').select('id').eq('email', email).maybeSingle();
@@ -41,6 +42,11 @@ async function updateUser(targetId, updates) {
   const { data, error } = await supabase.from('Users').update(updates).eq('id', targetId).select().maybeSingle();
   if (error) throw new ApiError(400, error.message);
   if (!data) throw new ApiError(404, 'User not found');
+  
+  if (updates.role) {
+    await createNotification({ userId: targetId, message: `Your role was updated to ${updates.role}`, type: 'role_changed' });
+  }
+  
   return data;
 }
 
@@ -48,6 +54,8 @@ async function deactivateUser(targetId) {
   const { data, error } = await supabase.from('Users').update({ is_active: false }).eq('id', targetId).select().maybeSingle();
   if (error) throw new ApiError(400, error.message);
   if (!data) throw new ApiError(404, 'User not found');
+
+  await createNotification({ userId: targetId, message: 'Your account has been deactivated', type: 'user_deactivated' });
 }
 
 module.exports = { createUser, listUsers, updateUser, deactivateUser };

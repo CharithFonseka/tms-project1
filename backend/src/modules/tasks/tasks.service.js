@@ -2,13 +2,13 @@ const supabase = require('../../config/db');
 const ApiError = require('../../utils/ApiError');
 const { createNotification } = require('../notifications/notifications.service');
 
-async function createTask({ title, description, due_date, priority, assignees, allowPastDue }, creatorId) {
+async function createTask({ title, description, due_date, priority, assignees, project_id, allowPastDue }, creatorId) {
     if (!allowPastDue && new Date(due_date) < new Date()) {
         throw new ApiError(400, 'Due date cannot be in the past');
     }
     const { data: task, error } = await supabase
         .from('Tasks')
-        .insert({ title, description, due_date, priority, created_by: creatorId })
+        .insert({ title, description, due_date, priority, project_id, created_by: creatorId })
         .select()
         .single();
     if (error) throw new ApiError(400, error.message);
@@ -28,7 +28,7 @@ async function createTask({ title, description, due_date, priority, assignees, a
     return { ...task, assignees };
 }
 
-async function listTasks({ status, priority, sortBy = 'due_date', order = 'asc', page = 1, limit = 20 }, requester) {
+async function listTasks({ status, priority, project_id, sortBy = 'due_date', order = 'asc', page = 1, limit = 20 }, requester) {
     let query = supabase
         .from('Tasks')
         .select('*, TaskAssignments(user_id)', { count: 'exact' })
@@ -37,6 +37,7 @@ async function listTasks({ status, priority, sortBy = 'due_date', order = 'asc',
 
     if (status) query = query.eq('status', status);
     if (priority) query = query.eq('priority', priority);
+    if (project_id) query = query.eq('project_id', project_id);
 
     const { data, count } = await query;
 
