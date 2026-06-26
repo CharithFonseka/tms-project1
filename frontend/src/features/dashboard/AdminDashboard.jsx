@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { listUsersRequest } from '../../api/usersApi';
 import { listTasksRequest } from '../../api/tasksApi';
 import StatCard from './StatCard';
+import TaskBoard from '../tasks/TaskBoard';
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState({ totalUsers: 0, activeUsers: 0, totalTasks: 0, completedTasks: 0 });
@@ -41,6 +42,10 @@ export default function AdminDashboard() {
                     <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span className="text-sm font-medium text-slate-300">All systems are operational. The platform is running smoothly.</span>
                 </div>
+            </div>
+
+            <div className="mt-4">
+                <TaskBoard hideHeader={true} />
             </div>
         </div>
     );
