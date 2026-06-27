@@ -25,7 +25,7 @@ assignees: []
 
 ## Environment
 - **Browser / Client:** (e.g., Chrome 125, Postman)
-- **Deployed URL or Local:** (e.g., `https://tms-backend-im23037.azurewebsites.net` or `localhost:3000`)
+- **Deployed URL or Local:** (e.g., `https://<your-backend>.onrender.com` or `localhost:3000`)
 - **Module affected:** (e.g., auth, tasks, notifications, frontend-task-board)
 - **Related SRS section:** (e.g., "Task Management > Status Transition Rules")
 

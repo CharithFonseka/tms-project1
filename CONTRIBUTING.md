@@ -25,9 +25,9 @@
 A full-stack Task Management System (TMS) built for **INTE 21323**.  
 Users belong to one of three roles (`Admin`, `Project Manager`, `Collaborator`) and collaborate on **Projects** that contain **Tasks**. Tasks support comments, file attachments, and real-time status notifications via WebSockets.
 
-- **Frontend:** `https://[azure-swa-url].azurestaticapps.net`  
-- **Backend API:** `https://tms-backend-im23037.azurewebsites.net/api`  
-- **Swagger UI:** `https://tms-backend-im23037.azurewebsites.net/api-docs`  
+- **Frontend (Vercel):** `https://<your-app>.vercel.app`  
+- **Backend API (Render):** `https://<your-backend>.onrender.com/api`  
+- **Swagger UI:** `https://<your-backend>.onrender.com/api-docs`  
 - **GitHub Repo:** `https://github.com/CharithFonseka/tms-project1`  
 - **Requirements:** [`Task_Management_SRS.md`](./Task_Management_SRS.md)
 
@@ -83,7 +83,7 @@ tms-project1/                   ← monorepo root
 │   ├── Dockerfile
 │   └── package.json
 ├── .github/
-│   ├── workflows/              # deploy-backend.yml, azure-static-web-apps.yml
+│   ├── workflows/              # ci.yml (tests + build gate)
 │   ├── ISSUE_TEMPLATE/         # bug_report.md, feature_request.md, task.md
 │   ├── PULL_REQUEST_TEMPLATE.md
 │   └── CODEOWNERS              # Auto-assigns reviewers per module path
@@ -284,27 +284,27 @@ npm run test:ui                 # Vitest browser UI
 
 ## 11. Deployment
 
-### Trigger conditions (GitHub Actions)
+The app deploys to **Render** (backend) and **Vercel** (frontend). Both
+platforms auto-deploy from the connected GitHub repo on push to `main`, so
+there are no deploy GitHub Actions — CI (`.github/workflows/ci.yml`) only runs
+tests and the frontend build as a PR gate.
 
-| Workflow | Trigger | Target |
-|---|---|---|
-| `deploy-backend.yml` | Push to `main`, path `backend/**` | Azure App Service (`tms-backend-im23037`) |
-| `azure-static-web-apps.yml` | Push to `main`, path `frontend/**` | Azure Static Web Apps |
+### Backend — Render
+- Blueprint: [`render.yaml`](./render.yaml) (Node web service, `rootDir: backend`, health check `/health`).
+- Set the secret env vars in the Render dashboard: `SUPABASE_URL`,
+  `SUPABASE_SERVICE_ROLE_KEY`, `JWT_SECRET`, `EMAIL_USER`, `EMAIL_PASS`,
+  `FRONTEND_URL` (the Vercel origin). `PORT` is provided by Render.
 
-### Required GitHub Secrets
-
-| Secret | Used by |
-|---|---|
-| `AZURE_WEBAPP_PUBLISH_PROFILE` | Backend deployment workflow |
-| `AZURE_STATIC_WEB_APPS_API_TOKEN` | Frontend deployment workflow |
-
-Set these in **GitHub → Settings → Secrets and variables → Actions**.
+### Frontend — Vercel
+- Config: [`frontend/vercel.json`](./frontend/vercel.json) (Vite build, SPA rewrites).
+- Set build-time env vars in the Vercel dashboard: `VITE_API_BASE_URL`
+  (the Render backend `…/api`) and `VITE_SOCKET_URL` (the Render backend origin).
 
 ### Manual deploy check
 After a `main` push:
-1. Monitor the **Actions** tab for workflow status.
-2. Hit `GET https://tms-backend-im23037.azurewebsites.net/health` — expect `{"status":"ok"}`.
-3. Open the frontend URL and log in.
+1. Confirm CI is green in the **Actions** tab, and the Render/Vercel dashboards show a successful deploy.
+2. Hit `GET https://<your-backend>.onrender.com/health` — expect `{"status":"ok"}`.
+3. Open the Vercel frontend URL and log in.
 
 ---
 
