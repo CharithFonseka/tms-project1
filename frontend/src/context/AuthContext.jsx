@@ -1,20 +1,19 @@
 
-import { createContext, useContext, useState, useEffect } from 'react';
-import { loginRequest } from '../api/authApi';
+import { createContext, useContext, useState } from 'react';
+import { loginRequest, logoutRequest } from '../api/authApi';
 
 const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+function readStoredUser() {
+    // Only non-sensitive display info is persisted client-side — the actual
+    // JWT lives in an httpOnly cookie and is never readable from JS.
+    const stored = sessionStorage.getItem('user');
+    return stored ? JSON.parse(stored) : null;
+}
 
-    useEffect(() => {
-        // Only non-sensitive display info is persisted client-side — the actual
-        // JWT lives in an httpOnly cookie and is never readable from JS.
-        const stored = sessionStorage.getItem('user');
-        if (stored) setUser(JSON.parse(stored));
-        setLoading(false);
-    }, []);
+export function AuthProvider({ children }) {
+    // Hydrate synchronously so consumers never see a null-user first render.
+    const [user, setUser] = useState(readStoredUser);
 
     async function login(email, password) {
         const data = await loginRequest(email, password);
@@ -23,13 +22,15 @@ export function AuthProvider({ children }) {
         return data;
     }
 
-    function logout() {
+    async function logout() {
         setUser(null);
         sessionStorage.removeItem('user');
+        // Best-effort: clear the httpOnly auth/refresh cookies server-side.
+        try { await logoutRequest(); } catch { /* ignore network errors on logout */ }
     }
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, logout, loading: false }}>
             {children}
         </AuthContext.Provider>
     );
