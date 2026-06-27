@@ -12,6 +12,10 @@ npm-debug.log*
 # Build output
 dist/
 build/
+*.zip
+
+# Azure CLI local config
+.azure/
 
 # OS files
 .DS_Store
