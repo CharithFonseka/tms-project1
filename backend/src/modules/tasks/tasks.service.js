@@ -55,12 +55,26 @@ async function updateTask(taskId, updates) {
     return data;
 }
 
+// Forward-only progression (SRS G-4): To Do → In Progress → Completed
+const STATUS_ORDER = ['To Do', 'In Progress', 'Completed'];
+
 async function updateStatus(taskId, status, requester) {
     if (requester.role === 'Collaborator') {
         const { data: assignment } = await supabase
             .from('TaskAssignments').select('id').eq('task_id', taskId).eq('user_id', requester.id).maybeSingle();
         if (!assignment) throw new ApiError(403, 'You are not assigned to this task');
     }
+
+    const { data: current } = await supabase.from('Tasks').select('status').eq('id', taskId).single();
+    if (!current) throw new ApiError(404, 'Task not found');
+
+    // Reject any move that is not exactly one step forward (no skipping, no going back).
+    const fromIdx = STATUS_ORDER.indexOf(current.status);
+    const toIdx = STATUS_ORDER.indexOf(status);
+    if (toIdx !== fromIdx + 1) {
+        throw new ApiError(400, `Invalid status transition: ${current.status} → ${status}`);
+    }
+
     const { data, error } = await supabase.from('Tasks').update({ status }).eq('id', taskId).select().single();
     if (error) throw new ApiError(400, error.message);
 
