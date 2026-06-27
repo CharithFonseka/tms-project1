@@ -192,6 +192,8 @@ io.use((socket, next) => {
 
 ---
 
+API Documentation - http://172.19.22.122:3000/api-docs/
+
 ## 3. Frontend Folder Structure
 
 ```
