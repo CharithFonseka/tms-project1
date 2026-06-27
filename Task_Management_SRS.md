@@ -303,19 +303,19 @@ The API shall return Standard HTTP status codes with Structured error response a
 
 ## System Architecture
 
-> **G-9 resolved.** The system uses a layered MVC-style architecture deployed on Azure.
+> **G-9 resolved.** The system uses a layered MVC-style architecture: frontend on Vercel, backend on Render.
 
 ### Component Overview
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  Azure Static Web Apps                                  │
+│  Vercel                                                 │
 │  React + Vite (Frontend)                                │
 │  Features: Auth, Admin, Tasks, Notifications            │
 └────────────────────────┬────────────────────────────────┘
                          │ HTTPS / WSS
 ┌────────────────────────▼────────────────────────────────┐
-│  Azure App Service                                      │
+│  Render                                                 │
 │  Node.js + Express (Backend)                            │
 │  Modules: auth, users, projects, tasks,                 │
 │           comments, attachments, notifications          │
@@ -357,7 +357,7 @@ tms-project1/
 │   ├── features/        # auth, admin, tasks, notifications
 │   └── routes/          # ProtectedRoute, AppRoutes
 ├── .github/
-│   ├── workflows/       # CI/CD (Azure App Service + Static Web Apps)
+│   ├── workflows/       # CI (tests + build) — deploy via Render/Vercel
 │   ├── ISSUE_TEMPLATE/  # Bug, Feature, Task templates
 │   ├── PULL_REQUEST_TEMPLATE.md
 │   └── CODEOWNERS
@@ -370,18 +370,17 @@ tms-project1/
 
 ## Deployment Requirements
 * Docker containerization with separate `Dockerfile` for backend and frontend.
-* CI/CD via GitHub Actions:
-  * `deploy-backend.yml` — triggered on `main` push to `backend/**`, deploys to Azure App Service.
-  * `azure-static-web-apps.yml` — triggered on `main` push to `frontend/**`, builds and deploys to Azure Static Web Apps.
+* Cloud deployment: **backend on Render** ([`render.yaml`](./render.yaml)) and **frontend on Vercel** ([`frontend/vercel.json`](./frontend/vercel.json)). Both auto-deploy from the connected GitHub repo on push to `main`.
+* CI via GitHub Actions: `ci.yml` runs backend Jest and frontend Vitest + build on every PR and push to `main`/`develop` (the PR test gate).
 * Ensure CORS and environment variable configuration for production.
 * Environment variables shall be documented in `.env.example` files (one per service — never commit real `.env` files).
 
 **Live URLs:**
-* **Frontend:** `https://[azure-static-web-apps-url].azurestaticapps.net`
-* **Backend API:** `https://tms-backend-im23037.azurewebsites.net/api`
-* **Swagger UI:** `https://tms-backend-im23037.azurewebsites.net/api-docs`
+* **Frontend (Vercel):** `https://<your-app>.vercel.app`
+* **Backend API (Render):** `https://<your-backend>.onrender.com/api`
+* **Swagger UI:** `https://<your-backend>.onrender.com/api-docs`
 
-> Update the frontend URL above once the Azure Static Web Apps deployment name is confirmed.
+> Replace the placeholders above with the actual Vercel and Render URLs once deployed.
 
 ---
 

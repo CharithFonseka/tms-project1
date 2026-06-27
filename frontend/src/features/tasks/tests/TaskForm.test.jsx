@@ -9,7 +9,7 @@ vi.mock('../../../api/usersApi', () => ({
 describe('TaskForm', () => {
   it('shows validation error when title is empty', async () => {
     render(<TaskForm onClose={vi.fn()} onCreated={vi.fn()} />);
-    fireEvent.click(screen.getByText('Create'));
+    fireEvent.click(screen.getByRole('button', { name: /create task/i }));
     await waitFor(() => expect(screen.getByText('Title is required')).toBeInTheDocument());
   });
 });

@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import { setupServer } from 'msw/node';
 import { taskHandlers } from '../task.handlers';
 import TaskBoard from '../TaskBoard';
@@ -11,7 +12,11 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 function renderBoard() {
-  return render(<AuthProvider><TaskBoard /></AuthProvider>);
+  return render(
+    <MemoryRouter>
+      <AuthProvider><TaskBoard /></AuthProvider>
+    </MemoryRouter>
+  );
 }
 
 describe('TaskBoard', () => {

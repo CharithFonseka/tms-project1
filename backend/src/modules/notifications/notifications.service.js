@@ -7,13 +7,13 @@ function attachIO(io) { ioInstance = io; }
 async function createNotification({ userId, message, type }) {
   const { data, error } = await supabase
     .from('Notifications')
-    .insert({ user_id: userId, message })
+    .insert({ user_id: userId, message, type })
     .select()
     .single();
   if (error) throw new ApiError(400, error.message);
 
   if (ioInstance) {
-    ioInstance.to(`user:${userId}`).emit('notification:new', { ...data, type });
+    ioInstance.to(`user:${userId}`).emit('notification:new', data);
   }
   return data;
 }
@@ -23,7 +23,7 @@ async function listNotifications(userId, { unreadOnly = false } = {}) {
     .from('Notifications')
     .select('*')
     .eq('user_id', userId)
-    .order('createdAt', { ascending: false });
+    .order('created_at', { ascending: false });
   if (unreadOnly) query = query.eq('is_read', false);
   const { data, error } = await query;
   if (error) throw new ApiError(400, error.message);

@@ -3,21 +3,22 @@ const supabase = require('../config/db');
 const { createNotification } = require('../modules/notifications/notifications.service');
 
 async function checkApproachingDeadlines() {
-  const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split('T')[0];
-    
+  // SRS: notify when a task's due_date is <= 24 hours away.
+  const now = new Date();
+  const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
   const { data: tasks } = await supabase
     .from('Tasks')
     .select('id, title, due_date, TaskAssignments(user_id)')
-    .eq('due_date', tomorrow)
+    .gte('due_date', now.toISOString())
+    .lte('due_date', in24h.toISOString())
     .neq('status', 'Completed');
 
   for (const task of tasks || []) {
     for (const assignment of task.TaskAssignments) {
       await createNotification({
         userId: assignment.user_id,
-        message: `Task "${task.title}" is due tomorrow`,
+        message: `Task "${task.title}" is due within 24 hours`,
         type: 'deadline_approaching',
       });
     }
@@ -25,8 +26,9 @@ async function checkApproachingDeadlines() {
 }
 
 function startDeadlineReminderJob() {
-  cron.schedule('0 8 * * *', checkApproachingDeadlines);
-  console.log('Deadline reminder job scheduled — runs daily at 8am');
+  // SRS: evaluated by a scheduled cron job running every hour.
+  cron.schedule('0 * * * *', checkApproachingDeadlines);
+  console.log('Deadline reminder job scheduled — runs hourly');
 }
 
 module.exports = { startDeadlineReminderJob, checkApproachingDeadlines };

@@ -69,7 +69,7 @@ describe('listComments', () => {
         const result = await listComments('task-1');
         expect(result).toEqual(COMMENTS);
         expect(chain.eq).toHaveBeenCalledWith('task_id', 'task-1');
-        expect(chain.order).toHaveBeenCalledWith('createdAt');
+        expect(chain.order).toHaveBeenCalledWith('created_at');
     });
 
     test('throws ApiError on db error', async () => {

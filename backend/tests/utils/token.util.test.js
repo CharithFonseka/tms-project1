@@ -13,3 +13,10 @@ test('tampered token fails verification', () => {
   const tampered = token.slice(0, -2) + 'xx';
   expect(() => verifyToken(tampered)).toThrow();
 });
+
+test('refresh token carries type "refresh" and verifies', () => {
+  const { signRefreshToken } = require('../../src/utils/token.util');
+  const decoded = verifyToken(signRefreshToken({ id: 'abc', role: 'Admin' }));
+  expect(decoded.type).toBe('refresh');
+  expect(decoded.id).toBe('abc');
+});

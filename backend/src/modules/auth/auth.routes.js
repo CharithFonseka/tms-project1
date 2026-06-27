@@ -1,5 +1,11 @@
 const router = require('express').Router();
-const { loginHandler, resetPasswordHandler, getSocketTokenHandler } = require('./auth.controller');
+const {
+  loginHandler,
+  refreshHandler,
+  logoutHandler,
+  resetPasswordHandler,
+  getSocketTokenHandler,
+} = require('./auth.controller');
 const authenticate = require('../../middlewares/jwt.middleware');
 const validate = require('../../middlewares/validate.middleware');
 const { loginSchema, resetPasswordSchema } = require('./auth.validation');
@@ -27,6 +33,34 @@ const { loginSchema, resetPasswordSchema } = require('./auth.validation');
  *         description: Invalid credentials
  */
 router.post('/login', validate(loginSchema), loginHandler);
+
+/**
+ * @swagger
+ * /api/auth/refresh:
+ *   post:
+ *     summary: Exchange a valid refresh-token cookie for a new access token
+ *     tags: [Auth]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Access token refreshed
+ *       401:
+ *         description: Missing, invalid, or expired refresh token
+ */
+router.post('/refresh', refreshHandler);
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Clear the access and refresh cookies
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Logged out
+ */
+router.post('/logout', logoutHandler);
 
 /**
  * @swagger

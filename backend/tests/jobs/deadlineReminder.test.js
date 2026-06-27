@@ -9,22 +9,22 @@ jest.mock('../../src/modules/notifications/notifications.service', () => ({
 jest.mock('../../src/config/db', () => ({
   from: jest.fn(() => ({
     select: jest.fn(() => ({
-      eq: jest.fn(() => ({
-        neq: jest.fn(() => ({
-          data: [
-            {
-              id: 'task1',
-              title: 'Fix bug',
-              due_date: new Date(Date.now() + 24 * 60 * 60 * 1000)
-                .toISOString()
-                .split('T')[0],
-              TaskAssignments: [
-                { user_id: 'u1' },
-                { user_id: 'u2' },
-              ],
-            },
-          ],
-          error: null,
+      gte: jest.fn(() => ({
+        lte: jest.fn(() => ({
+          neq: jest.fn(() => ({
+            data: [
+              {
+                id: 'task1',
+                title: 'Fix bug',
+                due_date: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(),
+                TaskAssignments: [
+                  { user_id: 'u1' },
+                  { user_id: 'u2' },
+                ],
+              },
+            ],
+            error: null,
+          })),
         })),
       })),
     })),
@@ -36,12 +36,12 @@ test('creates notifications for each assignee of a task due tomorrow', async () 
   expect(createNotification).toHaveBeenCalledTimes(2);
   expect(createNotification).toHaveBeenCalledWith({
     userId: 'u1',
-    message: 'Task "Fix bug" is due tomorrow',
+    message: 'Task "Fix bug" is due within 24 hours',
     type: 'deadline_approaching',
   });
   expect(createNotification).toHaveBeenCalledWith({
     userId: 'u2',
-    message: 'Task "Fix bug" is due tomorrow',
+    message: 'Task "Fix bug" is due within 24 hours',
     type: 'deadline_approaching',
   });
 });

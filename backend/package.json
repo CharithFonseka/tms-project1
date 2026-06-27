@@ -9,8 +9,9 @@
     "test": "jest --runInBand --forceExit"
   },
   "jest": {
+    "testEnvironment": "node",
     "setupFiles": [
-      "dotenv/config"
+      "<rootDir>/tests/setup.env.js"
     ]
   },
   "keywords": [],

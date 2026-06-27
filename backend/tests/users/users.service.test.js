@@ -2,6 +2,12 @@ jest.mock('../../src/config/db');
 jest.mock('../../src/utils/mailer', () => ({
   sendWelcomeEmail: jest.fn().mockResolvedValue(undefined),
 }));
+// Isolate the unit under test from the notification side-effect that
+// updateUser (role change) and deactivateUser trigger.
+jest.mock('../../src/modules/notifications/notifications.service', () => ({
+  createNotification: jest.fn().mockResolvedValue(undefined),
+  attachIO: jest.fn(),
+}));
 const supabase = require('../../src/config/db');
 const { createUser, listUsers } = require('../../src/modules/users/users.service');
 const { updateUser } = require('../../src/modules/users/users.service');

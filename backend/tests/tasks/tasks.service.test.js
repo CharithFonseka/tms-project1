@@ -227,9 +227,23 @@ describe('updateStatus', () => {
     const ASSIGNED_USERS = [{ user_id: 'user-a' }, { user_id: 'user-b' }];
     const TASK_DATA      = { id: 't1', status: 'Completed' };
 
+    // The Tasks mock serves the current-status read first, then the update result.
+    function tasksMock(currentStatus) {
+        const single = jest.fn()
+            .mockResolvedValueOnce({ data: { status: currentStatus } }) // transition check read
+            .mockResolvedValueOnce({ data: TASK_DATA, error: null });    // update result
+        return {
+            update: jest.fn().mockReturnThis(),
+            eq:     jest.fn().mockReturnThis(),
+            select: jest.fn().mockReturnThis(),
+            single,
+        };
+    }
+
     /** Build mock for Collaborator RBAC path */
-    function mockForCollaborator(assignmentData) {
+    function mockForCollaborator(assignmentData, currentStatus = 'To Do') {
         let taCallCount = 0;
+        const tasks = tasksMock(currentStatus);
         supabase.from = jest.fn((table) => {
             if (table === 'TaskAssignments') {
                 taCallCount++;
@@ -247,19 +261,13 @@ describe('updateStatus', () => {
                     eq:     jest.fn().mockResolvedValue({ data: ASSIGNED_USERS, error: null }),
                 };
             }
-            if (table === 'Tasks') {
-                return {
-                    update: jest.fn().mockReturnThis(),
-                    eq:     jest.fn().mockReturnThis(),
-                    select: jest.fn().mockReturnThis(),
-                    single: jest.fn().mockResolvedValue({ data: TASK_DATA, error: null }),
-                };
-            }
+            if (table === 'Tasks') return tasks;
         });
     }
 
     /** Build mock for Manager (no RBAC check, skips first TA call) */
-    function mockForManager() {
+    function mockForManager(currentStatus = 'In Progress') {
+        const tasks = tasksMock(currentStatus);
         supabase.from = jest.fn((table) => {
             if (table === 'TaskAssignments') {
                 return {
@@ -267,26 +275,26 @@ describe('updateStatus', () => {
                     eq:     jest.fn().mockResolvedValue({ data: ASSIGNED_USERS, error: null }),
                 };
             }
-            if (table === 'Tasks') {
-                return {
-                    update: jest.fn().mockReturnThis(),
-                    eq:     jest.fn().mockReturnThis(),
-                    select: jest.fn().mockReturnThis(),
-                    single: jest.fn().mockResolvedValue({ data: TASK_DATA, error: null }),
-                };
-            }
+            if (table === 'Tasks') return tasks;
         });
     }
 
-    test('Manager can update status and notifications are sent', async () => {
-        mockForManager();
+    test('Manager can advance status one step and notifications are sent', async () => {
+        mockForManager('In Progress');
         const result = await updateStatus('t1', 'Completed', { role: 'Manager', id: 'mgr' });
         expect(result).toEqual(TASK_DATA);
         expect(createNotification).toHaveBeenCalledTimes(ASSIGNED_USERS.length);
     });
 
-    test('Collaborator assigned to task can update status', async () => {
-        mockForCollaborator({ id: 'a1' });
+    test('rejects a status transition that skips a state (To Do → Completed)', async () => {
+        mockForManager('To Do');
+        await expect(
+            updateStatus('t1', 'Completed', { role: 'Manager', id: 'mgr' })
+        ).rejects.toMatchObject({ status: 400 });
+    });
+
+    test('Collaborator assigned to task can advance status one step', async () => {
+        mockForCollaborator({ id: 'a1' }, 'To Do');
         const result = await updateStatus('t1', 'In Progress', { role: 'Collaborator', id: 'user-a' });
         expect(result).toEqual(TASK_DATA);
     });

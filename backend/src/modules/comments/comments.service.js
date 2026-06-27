@@ -16,7 +16,7 @@ async function addComment(taskId, userId, content) {
 }
 
 async function listComments(taskId) {
-    const { data, error } = await supabase.from('Comments').select('*').eq('task_id', taskId).order('createdAt');
+    const { data, error } = await supabase.from('Comments').select('*').eq('task_id', taskId).order('created_at');
     if (error) throw new ApiError(400, error.message);
     return data;
 }
